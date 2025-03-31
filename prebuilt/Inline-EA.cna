@@ -6,8 +6,8 @@ beacon_command_register(
 "Description:\n" .
 "  Execute a .NET assembly in the current beacon process.\n\n" .
 "  --patchexit   Optional. Patches System.Environment.Exit (flagged by Elastic).\n" .
-"  --amsi        Optional. Patches AmsiScanBuffer to bypass AMSI.\n" .
-"  --etw         Optional. Patches ETW EventWrite.\n\n" .
+"  --amsi        Optional. Patches AmsiScanBuffer string in clr.dll to bypass AMSI.\n" .
+"  --etw         Optional. EAT Hooks advapi32.dll!EventWrite to bypass ETW.\n\n" .
 "Examples:\n" .
 "  inline-ea /path/to/Rubeus.exe triage --amsi --etw --patchexit\n" .
 "  inline-ea /path/to/Powerpick.exe whoami /all --amsi --etw\n"

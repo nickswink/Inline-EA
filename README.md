@@ -31,8 +31,8 @@ Description:
   Execute a .NET assembly in the current beacon process.
 
   --patchexit   Optional. Patches System.Environment.Exit (flagged by Elastic).
-  --amsi        Optional. Patches AmsiScanBuffer to bypass AMSI.
-  --etw         Optional. Patches ETW EventWrite.
+  --amsi        Optional. Patches AmsiScanBuffer string in clr.dll to bypass AMSI.
+  --etw         Optional. EAT Hooks advapi32.dll!EventWrite to bypass ETW.
 
 Examples:
   inline-ea /path/to/Rubeus.exe triage --amsi --etw --patchexit
